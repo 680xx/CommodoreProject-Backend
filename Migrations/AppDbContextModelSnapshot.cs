@@ -29,7 +29,15 @@ namespace CommodoreProject_Backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Age")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Gender")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -42,6 +50,10 @@ namespace CommodoreProject_Backend.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("text");
 

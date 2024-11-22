@@ -68,7 +68,12 @@ public class UsersController : ControllerBase
 
         // Update the user properties
         user.Name = updatedUser.Name;
+        user.Age = updatedUser.Age;
         user.Email = updatedUser.Email;
+        user.Password = updatedUser.Password;
+        user.Gender = updatedUser.Gender;
+        user.Phone = updatedUser.Phone;
+        user.Role = updatedUser.Role;
 
         try
         {
