@@ -1,5 +1,6 @@
 ﻿using CommodoreProject_Backend.Data;
 using CommodoreProject_Backend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,7 @@ public class UsersController : ControllerBase
         return await _context.Users.ToListAsync();
     }
     
+    [Authorize]
     // Get a user by ID
     [HttpGet("{id}")]
     public async Task<ActionResult<User>> GetUserById(int id)
@@ -109,4 +111,6 @@ public class UsersController : ControllerBase
 
         return NoContent();
     }
+    
+    
 }
