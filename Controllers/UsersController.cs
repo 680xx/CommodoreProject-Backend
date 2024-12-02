@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CommodoreProject_Backend.Controllers;
 
-[Route("api/[controller]")]
+[Route("users/[controller]")]
 [ApiController]
 public class UsersController : ControllerBase
 {

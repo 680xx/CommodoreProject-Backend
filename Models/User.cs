@@ -10,5 +10,4 @@ public class User
     public string Gender { get; set; }
     public string Phone { get; set; }
     public string Role { get; set; }
-    
 }

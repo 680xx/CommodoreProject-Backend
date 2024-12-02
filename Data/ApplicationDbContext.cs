@@ -5,9 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CommodoreProject_Backend.Data;
 
-public class AppDbContext : IdentityDbContext<IdentityUser>
+public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext(options)
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
+    public DbSet<AppUser> AppUsers { get; set; }
     public DbSet<User> Users { get; set; } // Example DbSet
 }
