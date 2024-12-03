@@ -46,7 +46,12 @@ app
     .MapGroup("api/")
     .MapIdentityApi<AppUser>();
 app.UseHttpsRedirection();
-app.UseCors();
+
+app.UseCors(options =>
+    options.WithOrigins("http://localhost:4200")
+        .AllowAnyMethod()
+        .AllowAnyHeader());
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
@@ -76,7 +81,7 @@ app.Run();
 
 public class UserRegistrationModel
 {
-    public string? Email { get; set; }
-    public string? Password { get; set; }
-    public string? FullName { get; set; }
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public string FullName { get; set; }
 }
