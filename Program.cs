@@ -1,14 +1,12 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 using CommodoreProject_Backend.Controllers;
 using CommodoreProject_Backend.Data;
 using CommodoreProject_Backend.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +16,37 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.EnableAnnotations();
+    // Lägger till authorization-knapp
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Ange din JWT Bearer-token"
+        }
+
+    );
+    // Lägger till authorization-knapp
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 builder.Services.AddAuthentication(x =>
 {
@@ -33,7 +61,9 @@ builder.Services.AddAuthentication(x =>
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(
-                builder.Configuration["AppSettings:JWTSecret"]!))
+                builder.Configuration["AppSettings:JWTSecret"]!)),
+        ValidateIssuer = false,     // Kollar vilken entitet som utfärdat token.
+        ValidateAudience = false,   // Kollar vem som token är avsedd för.
     };
 });
 
@@ -67,10 +97,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapControllers();
+
 app.MapGroup("/api")
    .MapIdentityApi<AppUser>();
 app.MapGroup("/api")
-   .MapIdentityUserEndpoints();
+   .MapIdentityUserEndpoints()
+   .MapAccountEndpoints();
 
 app.UseHttpsRedirection();
 
@@ -81,7 +114,7 @@ app.UseCors(options =>
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
+
 
 app.Run();
 

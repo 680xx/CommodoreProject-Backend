@@ -45,7 +45,8 @@ public static class IdentityUserEndpoints
                 return Results.Ok(result);
             else
                 return Results.BadRequest(result);
-            });
+            })
+            .WithTags("IdentityUserEndpoints");
         
         app.MapPost("/signIn", async (
             UserManager<AppUser> userManager,
@@ -77,7 +78,8 @@ public static class IdentityUserEndpoints
                 }
                 else
                     return Results.BadRequest(new { message = "Username or password is incorrect." });
-            });
+            })
+            .WithTags("IdentityUserEndpoints");
 
         return app;
     }
