@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using CommodoreProject_Backend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -30,35 +31,37 @@ public static class IdentityUserEndpoints
     {
         
         // Endpoints (Minimal API)
+
         app.MapPost("/signUp", async (
-            UserManager<AppUser> userManager,
-            [FromBody] UserRegistrationModel userRegistrationModel) =>
+                UserManager<AppUser> userManager,
+                [FromBody] UserRegistrationModel userRegistrationModel) =>
             {
-            AppUser user = new AppUser()
-            {
-                UserName = userRegistrationModel.Email,
-                Email = userRegistrationModel.Email,
-                FullName = userRegistrationModel.FullName,
-            };
-            var result = await userManager.CreateAsync(user, userRegistrationModel.Password);
-            if (result.Succeeded)
-                return Results.Ok(result);
-            else
-                return Results.BadRequest(result);
+                AppUser user = new AppUser()
+                {
+                    UserName = userRegistrationModel.Email,
+                    Email = userRegistrationModel.Email,
+                    FullName = userRegistrationModel.FullName,
+                };
+                var result = await userManager.CreateAsync(user, userRegistrationModel.Password);
+                if (result.Succeeded)
+                    return Results.Ok(result);
+                else
+                    return Results.BadRequest(result);
             })
-            .WithTags("IdentityUserEndpoints");
-        
+            .WithTags("IdentityUserEndpoints")
+            .AllowAnonymous();
+
         app.MapPost("/signIn", async (
-            UserManager<AppUser> userManager,
-            [FromBody] LoginModel loginModel,
-            IOptions<AppSettings> appSettings) =>
+                UserManager<AppUser> userManager,
+                [FromBody] LoginModel loginModel,
+                IOptions<AppSettings> appSettings) =>
             {
                 var user = await userManager.FindByEmailAsync(loginModel.Email);
                 if (user != null && await userManager.CheckPasswordAsync(user, loginModel.Password))
                 {
                     var signInKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(appSettings.Value.JWTSecret)
-                        );
+                    );
                     var tokenDescriptor = new SecurityTokenDescriptor
                     {
                         Subject = new ClaimsIdentity(new Claim[]
@@ -79,7 +82,8 @@ public static class IdentityUserEndpoints
                 else
                     return Results.BadRequest(new { message = "Username or password is incorrect." });
             })
-            .WithTags("IdentityUserEndpoints");
+            .WithTags("IdentityUserEndpoints")
+            .AllowAnonymous();
 
         return app;
     }
