@@ -1,49 +1,12 @@
-using System.Text;
 using CommodoreProject_Backend.Controllers;
 using CommodoreProject_Backend.Extensions;
 using CommodoreProject_Backend.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.EnableAnnotations();
-    // Lägger till authorization-knapp
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-        {
-            Name = "Authorization",
-            Type = SecuritySchemeType.Http,
-            Scheme = "bearer",
-            BearerFormat = "JWT",
-            In = ParameterLocation.Header,
-            Description = "Ange din JWT Bearer-token"
-        }
-
-    );
-    // Lägger till authorization-knapp
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
-    });
-});
-
-
 
 builder.Services.AddAuthorization(options =>
 {
@@ -54,7 +17,8 @@ builder.Services.AddAuthorization(options =>
 });
 
 // Extension Methods, städad kod med bättre struktur
-builder.Services.InjectDbContext(builder.Configuration)
+builder.Services.AddSwaggerExplorer()
+                .InjectDbContext(builder.Configuration)
                 .AddIdentityHandlersAndStores()
                 .ConfigureIdentityOptions()
                 .AddIdentityAuth(builder.Configuration);
@@ -63,12 +27,9 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSet
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.ConfigureSwaggerExplorer()
+   .ConfigCORS(builder.Configuration)
+   .AddIdentityAuthMiddlewares();
 
 app.MapControllers();
 
@@ -79,14 +40,5 @@ app.MapGroup("/api")
    .MapAccountEndpoints();
 
 app.UseHttpsRedirection();
-
-app.UseCors(options =>
-    options.WithOrigins("http://localhost:4200")
-        .AllowAnyMethod()
-        .AllowAnyHeader());
-
-app.UseAuthentication();
-app.UseAuthorization();
-
 
 app.Run();
