@@ -2,6 +2,7 @@
 using CommodoreProject_Backend.Data;
 using CommodoreProject_Backend.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
@@ -35,12 +36,9 @@ public static class IdentityExtensions
     // Auth = Authentication + Authorization
     public static IServiceCollection AddIdentityAuth(this IServiceCollection services, IConfiguration config)
     {
-        services.AddAuthentication(x =>
-        {
-            x.DefaultAuthenticateScheme =
-                x.DefaultChallengeScheme =
-                    x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(y =>
+        services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(y =>
         {
             y.SaveToken = false;
             y.TokenValidationParameters = new TokenValidationParameters
@@ -52,6 +50,13 @@ public static class IdentityExtensions
                 ValidateIssuer = false,     // Kollar vilken entitet som utfärdat token.
                 ValidateAudience = false,   // Kollar vem som token är avsedd för.
             };
+        });
+        services.AddAuthorization(options =>
+        {
+            options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                .RequireAuthenticatedUser()
+                .Build();
         });
         return services;
     }

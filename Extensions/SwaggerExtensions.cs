@@ -12,17 +12,14 @@ public static class SwaggerExtensions
             options.EnableAnnotations();
             // Lägger till authorization-knapp
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "Ange din JWT Bearer-token"
-                }
-
-            );
-            // Lägger till authorization-knapp
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Please enter JWT token",
+            });
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
