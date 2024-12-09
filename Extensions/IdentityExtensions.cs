@@ -34,7 +34,6 @@ public static class IdentityExtensions
         return services;
     }
     
-    // Auth = Authentication + Authorization
     public static IServiceCollection AddIdentityAuth(this IServiceCollection services, IConfiguration config)
     {
         services
@@ -58,6 +57,11 @@ public static class IdentityExtensions
                 .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
                 .Build();
+            
+            // Policy/criteria för att kräva att man har "libraryID" och "Ålder under 10".
+            // options.AddPolicy("HasLibraryID", policy => policy.RequireClaim("LibraryID"));
+            // options.AddPolicy("Under10", policy => policy.RequireAssertion(context =>
+            // Int32.Parse(ContextCallback.User.Claims.First(x => x.type=="Age").value)<10));
         });
         return services;
     }

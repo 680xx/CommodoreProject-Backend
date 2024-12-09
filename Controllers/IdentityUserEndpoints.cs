@@ -60,15 +60,21 @@ public static class IdentityUserEndpoints
         var user = await userManager.FindByEmailAsync(loginModel.Email);
         if (user != null && await userManager.CheckPasswordAsync(user, loginModel.Password))
         {
+            var roles = await userManager.GetRolesAsync(user);
             var signInKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(appSettings.Value.JWTSecret)
             );
+            ClaimsIdentity claims = new ClaimsIdentity(new Claim[]
+            {
+                new Claim("userID", user.Id.ToString()),
+                new Claim(ClaimTypes.Role,roles.First())
+            });
+            // Om man vill ha ett krav som inte är obligatoriskt att användaren har.
+            // if (user.libraryID != null)
+            //     claims.AddClaim(new Claim("libraryID", user.libraryID.ToString()!));
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim("UserID", user.Id.ToString())
-                }),
+                Subject = claims,
                 Expires = DateTime.UtcNow.AddDays(10),
                 SigningCredentials = new SigningCredentials(
                     signInKey,

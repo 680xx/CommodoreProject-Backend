@@ -17,7 +17,6 @@ public class UsersController : ControllerBase
         _context = context;
     }
     
-    // Get all users
     [HttpGet]
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
     {
@@ -25,7 +24,6 @@ public class UsersController : ControllerBase
     }
     
     [Authorize]
-    // Get a user by ID
     [HttpGet("{id}")]
     public async Task<ActionResult<User>> GetUserById(int id)
     {
@@ -38,9 +36,7 @@ public class UsersController : ControllerBase
 
         return user;
     }
-
-
-    // Create a new user
+    
     [HttpPost]
     public async Task<ActionResult<User>> CreateUser(User user)
     {
@@ -52,8 +48,7 @@ public class UsersController : ControllerBase
 
         return CreatedAtAction(nameof(GetUsers), new { id = user.Id }, user);
     }
-
-    // Update an existing user
+    
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(int id, User updatedUser)
     {
@@ -67,8 +62,7 @@ public class UsersController : ControllerBase
         {
             return NotFound($"User with ID {id} not found");
         }
-
-        // Update the user properties
+        
         user.Name = updatedUser.Name;
         user.Age = updatedUser.Age;
         user.Email = updatedUser.Email;
@@ -95,8 +89,7 @@ public class UsersController : ControllerBase
 
         return NoContent();
     }
-
-    // Delete a user
+    
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(int id)
     {
