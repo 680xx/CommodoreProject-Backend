@@ -15,6 +15,7 @@ public class UserRegistrationModel
     public string Email { get; set; }
     public string Password { get; set; }
     public string FullName { get; set; }
+    public string Role { get; set; }
 }
 
 public class LoginModel
@@ -44,6 +45,7 @@ public static class IdentityUserEndpoints
             FullName = userRegistrationModel.FullName,
         };
         var result = await userManager.CreateAsync(user, userRegistrationModel.Password);
+        await userManager.AddToRoleAsync(user, userRegistrationModel.Role);
         if (result.Succeeded)
             return Results.Ok(result);
         else
